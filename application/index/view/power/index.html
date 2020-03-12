@@ -1,0 +1,86 @@
+{extend name="base"}
+{block name="style"}{/block}
+{block name="content"}
+
+<div class="page-title">
+
+    <div class="breadcrumb-env pull-left">
+
+        <ol class="breadcrumb bc-1">
+            <li>
+                <a href="{:url('Index/index')}"><i class="fa-home"></i>首页</a>
+            </li>
+            <li>
+                <a href="">权限管理</a>
+            </li>
+            <li class="active">
+                <span>操作权限</span>
+            </li>
+        </ol>
+
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        
+    </div>
+</div>
+
+{/block}
+{block name="script"}
+<!-- Imported scripts on this page -->
+{load href="/static/js/rwd-table/js/rwd-table.min.js"}
+{load href="/static/js/datatables/js/jquery.dataTables.min.js"}
+
+<!-- <link rel="stylesheet" href="/static/css/xenon-forms.css"> -->
+
+<!-- Imported scripts on this page -->
+{load href="/static/js/datatables/dataTables.bootstrap.js"}
+{load href="/static/js/datatables/yadcf/jquery.dataTables.yadcf.js"}
+{load href="/static/js/datatables/tabletools/dataTables.tableTools.min.js"}
+<script>
+    $(function () {
+        nav_show("Role-index");
+    });
+    //del
+    function del(id) {
+        if (confirm("确定要删除吗？")) {
+            $.post("{:url('Role/delete')}", { id: id }, function (data) {
+                if (data.error > 0) {
+                    toastr.error(data.msg);
+                } else {
+                    toastr.success(data.msg);
+                    location.reload();
+                }
+            }, "json");
+        }
+    }
+
+    // function fetch_content(url){
+    //     fetch(url, {credentials: 'include'}).then(function(response){
+    //         $(".main-content").replaceWith(response);
+    //     }).catch(function(e){
+    //         console.log("Oops, you got an error when you are fetching {:url('Role/index')}");
+    //     })
+    // }
+
+    // // 导航带点击切换
+    // $(".nav-tabs>li").on("click", function(e){
+    //     let _this = this;
+    //     let active = "active";
+    //     // 移除原来的active
+    //     $(_this).siblings().each(function(){
+    //         if ($(this).hasClass(active)){
+    //             $(this).removeClass(active)
+    //         }
+    //     });
+    //     // 添加激活class
+    //     $(this).addClass(active);
+    // })
+
+
+
+
+</script>
+{/block}

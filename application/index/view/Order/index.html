@@ -1,0 +1,194 @@
+{extend name="base"}
+{block name="style"}
+    {load href="/static/js/layui/css/layui.css"}
+    <style media="screen">
+        label.control-label {
+            font-size: 13px;
+            color: #979898;
+        }
+
+        .btn-toolbar .btn-group, .btn-toolbar .input-group{
+            float: none;
+        }
+
+        .search-tool .btn{
+            margin-bottom: 0px;
+        }
+    </style>
+{/block}
+
+{block name="content"}
+<div class="page-title">
+    <div class="breadcrumb-env pull-left">
+            <ol class="breadcrumb bc-1">
+                <li>
+                    <a href="{:url('Index/index')}"><i class=fa-home></i>首页</a>
+                </li>
+                <li>
+                    <a href="#">订单管理</a>
+                </li>
+            </ol>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <!-- tool bar -->
+            <div class="panel-heading btn-toolbar">
+                <!-- <h3 class="panel-title">订单管理</h3> -->
+                <div class="btn-group focus-btn-group">
+                    <button class="btn btn-default btn-primary" onclick="showAjaxModal();">
+                        <span class=" fa-circle-o-notch"></span> 添 加
+                    </button>
+
+                    <button class="btn btn-danger" disabled='disabled'>
+                        <span class="fa-trash-o"></span> 删 除 </button>
+                </div>
+
+                <form class="form-inline pull-right search-tool" style="margin-bottom:15px;">
+                        <span>
+                            <label class="control-label">开始时间</label>
+                            <input type="text" class="form-control order-start-time datetime" placeholder="开始时间" id="order-datetime-1">
+                        </span>
+
+                        <span style="margin-left:15px;">
+                            <label class="control-label">结束时间</label>
+                            <input type="text" class="form-control order-end-time datetime" placeholder="结束时间" id="order-datetime-2" name="order-end-time">
+                        </span>
+
+                        <span style="margin-left: 15px;">
+                            <div class="btn-group">
+                              <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                订单类型<span class="caret"></span>
+                              </button>
+                              <ul class="dropdown-menu">
+                                <li><a href="#">订单类型</a></li>
+                                <li><a href="#">客户名称</a></li>
+                              </ul>
+                            </div>
+                        </span>
+                        <span">
+                            <div class="input-group">
+                                <input type="text" class="form-control" placeholder="查找...">
+                                <span class="input-group-btn">
+                                    <button type="submit" class="btn btn-info">
+                                        <span class="fa-search"></span>
+                                    </button>
+                                </span>
+                            </div>
+                        </span>
+                </form>
+            </div>
+
+            <div class="panel-body">
+                <script type="text/javascript">
+                    let target = "#order-2";
+                    jQuery(document).ready(function ($) {
+                        $(target).dataTable({
+                            dom: "t" + "<'row'<'col-xs-6'><'col-xs-6'>>",
+                            aoColumns: [
+                                { bSortable: false },
+                                null,
+                                null,
+                                null,
+                                null,
+                                null,
+                                // null,
+                                { bSortable: false }
+                            ],
+                        });
+
+                        // Replace checkboxes when they appear
+                        var $state = $(target + " thead input[type='checkbox']");
+
+                        $(target).on('draw.dt', function () {
+                            cbr_replace();
+
+                            $state.trigger('change');
+                        });
+
+                        // Script to select all checkboxes
+                        $state.on('change', function (ev) {
+                            var $chcks = $(target + " tbody input[type='checkbox']");
+
+                            if ($state.is(':checked')) {
+                                $chcks.prop('checked', true).trigger('change');
+                            }
+                            else {
+                                $chcks.prop('checked', false).trigger('change');
+                            }
+                        });
+                    });
+                </script>
+                <table class="table table-bordered table-striped" id="order-2">
+                    <thead>
+                        <th>编号</th>
+                        <th>订单类型</th>
+                        <th>客户名称</th>
+                        <th>打单时间</th>
+                        <th>付款状态</th>
+                        <th>收款金额</th>
+                        <th>操作</th>
+                    </thead>
+
+                    <tbody class="middle-align">
+                        <tr>
+                            <td>201231231123</td>
+                            <td>批发订单</td>
+                            <td>朱涛</td>
+                            <td>2013-12-1 12:01:00</td>
+                            <td>未付款</td>
+                            <td>10000￥</td>
+                            <td>
+                                <a href="javascript:;" class="btn btn-secondary btn-sm btn-icon icon-left"
+                                    onclick="editAjaxModal('{:url('Order/edit/1')}')">
+                                    编辑
+                                </a>
+
+                                <a ref="javascript:;" class="btn btn-danger btn-sm btn-icon icon-left"
+                                    onclick="del('1')">
+                                    删除
+                                </a>
+
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+{/block}
+
+{block name="script"}
+<!-- Imported scripts on this page -->
+{load href="/static/js/rwd-table/js/rwd-table.min.js"}
+{load href="/static/js/datatables/js/jquery.dataTables.min.js"}
+
+<!-- <link rel="stylesheet" href="/static/css/xenon-forms.css"> -->
+
+<!-- Imported scripts on this page -->
+{load href="/static/js/datatables/dataTables.bootstrap.js"}
+{load href="/static/js/datatables/yadcf/jquery.dataTables.yadcf.js"}
+{load href="/static/js/datatables/tabletools/dataTables.tableTools.min.js"}
+{load href="/static/js/layui/layui.js"}
+<script type="text/javascript">
+    topnav_show();
+
+    // layui datetime 组件
+    layui.use('laydate', () => {
+        let laydate = layui.laydate;
+
+        laydate.render({
+            elem: '#order-datetime-1',
+        })
+
+        laydate.render({
+            elem: '#order-datetime-2',
+        })
+    })
+</script>
+{/block}

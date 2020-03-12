@@ -1,0 +1,38 @@
+<ul id="main-menu" class="main-menu">
+	{volist name='_menuList' id='vo'}
+	<li>
+		<a href="{:url($vo['controller'].'/'.$vo['action'])}">
+			<i class="{$vo.ico}"></i>
+			<span class="title">{$vo.name}</span>
+		</a>
+		{if condition="$vo.child"}
+		<ul>
+			{volist name='$vo.child' id='vv'}
+			<li class=" {$vv['controller']}-{$vv['action']}">
+				<a href="{:url($vv['controller'].'/'.$vv['action'])}"><span class="title">{$vv.name}</span></a>
+			</li>
+			{/volist}
+		</ul>
+		{/if}
+
+	</li>
+	{/volist}
+
+</ul>
+
+
+<script>
+	function nav_show($cn) {
+		var className = $cn || '{$Request.controller}-{$Request.action}';
+		$("." + className).addClass('active');
+		$("." + className).parent().parent().addClass('active open');
+		$("." + className).parent().show();
+	}
+
+	function topnav_show(){
+		let url = "index/{$Request.controller}/{$Request.action}".toLowerCase();
+		let target = $("#main-menu>li:not(.has-sub)").find(`a[href="{url}"]:first`);
+
+		target.parent().addClass('active');
+	}
+</script>

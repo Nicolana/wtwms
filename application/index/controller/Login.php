@@ -7,6 +7,7 @@ use think\Validate;
 use think\Controller;
 use think\facade\Session;
 use app\index\model\User;
+use app\index\model\Role;
 
 class Login extends Controller{
     public function index(){
@@ -33,6 +34,8 @@ class Login extends Controller{
                 if ($user['password'] == md5($password)){
                     Session::set('uid', $user->id, 'think');
                     Session::set('company', $user->company, 'think');
+                    $role = Role::get(['id' => $user->role]);
+                    Session::set('storage', $role->storages, 'think');
                     return [
                         'error' => 0,
                         'msg'   =>  '登录成功'

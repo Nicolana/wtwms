@@ -7,7 +7,7 @@ class Brand extends Base{
 
     public function index(){
         $data = $this->request->get();
-        $where = [];
+        $where = $this->where;
 
         (empty($data['status']) || $data['status']) || $where['status'] = $data;
         empty($data['name']) || $where['name'] = ['like', '%'.data['name']];
@@ -38,6 +38,7 @@ class Brand extends Base{
             $brand->mfc = $param['mfc'];
             $brand->desc = $param['desc'];
             $brand->status = $param['status'];
+            $brand->storage = $this->where['storage'];
             $brand->add_time = time();
 
             if ($brand->save()) {

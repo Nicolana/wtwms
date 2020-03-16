@@ -6,7 +6,7 @@ use app\index\model\Category as CategoryModel;
 class Category extends Base{
     public function index(){
         $data 	= $this->request->get();
-        $where 	= [];
+        $where 	= $this->where;
 
         //封装where查询条件
         (empty($data['status']) || $data['status'] == '')	|| $where['status'] 	= 	$data['status'];
@@ -44,6 +44,7 @@ class Category extends Base{
 			$category->name 	= $param['name'];
 			$category->pid 		= $param['pid'];
 			$category->desc 	= $param['desc'];
+            $category->storage  = $this->where['storage'];
 			$category->add_time = time();
 
 			// 检测错误

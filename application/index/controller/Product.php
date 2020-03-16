@@ -6,13 +6,19 @@ namespace app\index\controller;
 //     app\index\model\Storage,
 //     app\index\model\Category;
 
-use app\index\model\{Product as ProductModel, Unit, Storage, Category, Brand};
+use app\index\model\{
+    Product as ProductModel,
+    Unit,
+    Storage,
+    Category,
+    Brand
+};
 
 class Product extends Base{
 
     public function index(){
         $data 	= $this->request->get();
-        $where 	= [];
+        $where 	= $this->where;
 
         //封装where查询条件
         (empty($data['status']) || $data['status'] == '')	|| $where['status'] = $data['status'];
@@ -25,21 +31,23 @@ class Product extends Base{
     }
 
     public function create(){
+        $status = array_merge(['status' => 0], $this->where);
         $this->assign([
-            'unit' => Unit::all( ['status' => 0]),
-            'category' => Category::all(['status' => 0]),
-            'storage' => Storage::all(['status' => 0]),
-            'brand' => Brand::all(['status' => 0]),
+            'unit' => Unit::all( $status),
+            'category' => Category::all($status),
+            'storage' => Storage::all(['status' => 0, 'id' => $this->where['storage']]),
+            'brand' => Brand::all($status),
         ]);
         return view();
     }
 
     public function edit($id) {
+        $status = array_merge(['status' => 0], $this->where);
         $this->assign([
-            'unit' => Unit::all( ['status' => 0]),
-            'category' => Category::all(['status' => 0]),
-            'storage' => Storage::all(['status' => 0]),
-            'brand' => Brand::all(['status' => 0]),
+            'unit' => Unit::all( $status),
+            'category' => Category::all($status),
+            'storage' => Storage::all(['status' => 0, 'id' => $this->where['storage']]),
+            'brand' => Brand::all($status),
             'info' => ProductModel::get($id),
         ]);
         return view();
@@ -61,7 +69,7 @@ class Product extends Base{
 			$product->sn 		= $param['sn'];
 			$product->name 		= $param['name'];
 			$product->category 	= $param['category'];
-			$product->storage 	= $param['storage'];
+			$product->storage 	= $this->where['storage'];
 			$product->unit 		= $param['unit'];
 			$product->spec 		= $param['spec'];
             $product->brand     = $param['brand']; // 品牌
@@ -70,6 +78,7 @@ class Product extends Base{
             $product->in_price = $param['in_price']; // 进货价
             $product->discount = $param['discount'];
 			$product->desc 		= $param['desc'];
+            $product->storage   = $this->where['storage'];
 			// $product->status 	= $param['status'];
 			$product->add_time 	= time();
 
@@ -93,7 +102,7 @@ class Product extends Base{
             $product 			= ProductModel::get($param['id']);
 			$product->name 		= $param['name'];
 			$product->category 	= $param['category'];
-			$product->storage 	= $param['storage'];
+			// $product->storage 	= $param['storage'];
 			$product->unit 		= $param['unit'];
 			$product->spec 		= $param['spec'];
             $product->brand     = $param['brand']; // 品牌

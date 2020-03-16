@@ -2,13 +2,16 @@
 namespace app\index\controller;
 
 use app\index\model\Unit as UnitModel;
+use think\facade\Session;
 
 class Unit extends Base{
 
     public function index()
     {
+        // echo json_encode($this->where);
         $data = $this->request->get();
-        $where = [];
+        $where = $this->where;
+
         //封装where查询条件
         (empty($data['status']) || $data['status'] == '')	|| $where['status'] 	= 	$data['status'];
         empty($data['name'])	|| $where['name']		= 	['like','%'.$data['name'] ];
@@ -41,6 +44,7 @@ class Unit extends Base{
             $unit->name 	= $param['name'];
             $unit->desc 	= $param['desc'];
             $unit->status 	= $param['status'];
+            $unit->storage   = $this->where['storage'];
             $unit->add_time = time();
 
             // 检测错误

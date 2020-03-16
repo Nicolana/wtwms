@@ -74,7 +74,7 @@ class User extends Base{
         if (is_null($error))
         {
             $userModel = UserModel::get($param['id']);
-
+            $password = $password == $userModel->$password ? $userModel->$password : $password;
             $data = [
                 'sn' => $param['sn'],
                 'username' => $param['username'],

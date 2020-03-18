@@ -1,7 +1,24 @@
 {extend name="base"}
 {block name="style"}
 {load href="/static/js/jstree/themes/default/style.min.css"}
+<style media="screen">
+    .add-method {
+        height: 25px;
+        display: block;
+        line-height: 25px;
+        color: blue;
+        cursor: pointer;
+    }
 
+    .del-method.delete {
+        display: block;
+        height: 30px;
+        line-height: 30px;
+        font-size: 13px;
+        color: red;
+        cursor: pointer;
+    }
+</style>
 {/block}
 {block name="content"}
 
@@ -22,7 +39,14 @@
 </div>
 
 <div class="panel panel-default">
-  <div class="panel-heading">产品入库添加</div>
+  <div class="panel-heading btn-toolbar">
+      <div class="btn-group">
+          <button type="button" class="btn btn-default" onclick="save()" name="button">保存</button>
+      </div>
+      <div class="btn-group pull-right">
+          <button type="button" class="btn btn-default" onclick="goback(this)" name="button">返回</button>
+      </div>
+  </div>
   <div class="panel-body">
 
   	<form class="validate add-form" novalidate="novalidate">
@@ -59,7 +83,9 @@
   	                <th class="sorting_disabled" rowspan="1" colspan="1">
   	                    产品名称
   	                </th>
-                    <th class="" rowspan="1" colspan="1">入库单位</th>
+                    <th rowspan="1" colspan="1">
+                        产品单位
+                    </th>
   	                <th class="sorting_disabled" rowspan="1" colspan="1">
   	                    入库数
   	                </th>
@@ -69,19 +95,25 @@
   	        <tbody>
   	            <tr role="row" class="odd order-list">
   	                <td>
-  	                    <a href="javascript:void(0);" onclick="add_list(this)">
-							[ + ]
-						 </a>
+  	                    <div class="add-method" href="javascript:void(0);" onclick="add_list(this)">
+							<!-- [ + ] -->
+                            <span class="add-method-icon icon iconfont">&#xe601;</span>
+                            <span class="add-method-text">添加</span>
+						 </div>
   	                </td>
   	                <td>
-						<input type="text" name="product[]" class="form-control" onclick="showAjaxModal()">
+						<input type="text" name="product[]" class="form-control" onclick="showAjaxModal(this)">
   	                </td>
                     <td>
-                        <input type="text" class="form-control dropdown-toggle" name="unit" value="test">
+                        <input type="text" name="unit[]" disabled class="form-control" value="">
                     </td>
-  	                <td><input type="text" class="form-control" value="" name="num[]"></td>
+  	                <td><input type="number" class="form-control" value="" name="num[]"></td>
   	                <td>
-  	                	<a class="delete" href="javascript:void(0)" onclick="del_list(this)"> [ - ] </a>
+  	                	<div class="del-method delete" href="javascript:void(0)" onclick="del_list(this)">
+                            <!-- [ - ] -->
+                            <span class="del-method-icon icon iconfont">&#xe6d6;</span>
+                            <span class="del-method-text">删除</span>
+                        </div>
   	                </td>
   	            </tr>
 
@@ -125,21 +157,23 @@
 				$(function(){
 					$('.js-tree-1').on("changed.jstree", function (e, data) {
                         let ids = data.selected;
-                        let name = data.node.text;
                         $('input[name="products"]').val(ids.join(','));
-                        $('input[name="product[]"]').val(name);
                     }).on('select_node.jstree', function (e, data) {
                         // if (data.event) {
                             // data.instance.select_node(data.node.children_d);
                             // data.instance.select_node(data.node.parents);
+                            let name = data.node.text;
                         // }
-                        if (data.event) {
+                        let type = data.node.type;
+                        if (data.event && type == "leaf") {
                             data.instance.select_node(data.node.children_d);
-
+                            // $('input[name="product[]"]').val(name);
                         }
                     }).on('deselect_node.jstree', function (e, data) {
+
                         if (data.event) {
                             data.instance.deselect_node(data.node.children_d);
+                            // $('input[name="product[]"]').val('');
                         }
                     }).jstree({
                         "core": {
@@ -166,8 +200,8 @@
 			</script>
 
             <div class="modal-footer">
-                <button type="button" class="btn btn-white" data-dismiss="modal">取消</button>
-                <button type="button" class="btn btn-info" data-dismiss="modal">确定</button>
+                <button type="button" onclick="dismiss_without_inpput()" class="btn btn-white" data-dismiss="modal">取消</button>
+                <button type="button" onclick="dismiss()" class="btn btn-info" data-dismiss="modal">确定</button>
             </div>
         </div>
     </div>
@@ -176,7 +210,10 @@
 
 {block name="script"}
 {load href="/static/js/jstree/jstree.min.js"}
+{load href="/static/css/iconfont.css"}
+{load href="/static/js/iconfont/iconfont.js"}
 <script>
+var target;
 $(function () {
 	nav_show('{$Request.controller}-index');
 });
@@ -186,10 +223,73 @@ function add_list(obj){
 }
 
 function del_list(obj){
-    $(obj).parent().parent().remove();
+    let row_length = $(obj).parent().parent().parent().find('tr').length
+    if (row_length > 1) {
+        $(obj).parent().parent().remove();
+    }
 }
 
-function showAjaxModal() {
+function dismiss_without_inpput() {
+    $(".js-tree-1").jstree("deselect_all",true);
+}
+
+function dismiss() {
+    let tree = $(".js-tree-1");
+    data = $('input[name="products"]').val();
+    data = data.split(',').map(x => Number(x)); // 转数字
+    if (data.length > 0) {
+        // 设置第一个节点
+        let id = data[0];
+        let node = tree.jstree("get_node", id);
+        if (node.type == "leaf"){
+            target.val(node.text);
+            target.attr('data-id', node.id);
+            target.parent().parent().find('input[name="unit[]"]').val(node.original.unit);
+        }
+
+        for (let i = 1; i < data.length; i++) {
+            id = data[i];
+            node = tree.jstree("get_node", id);
+            if (node.type == "leaf"){
+                // 添加新的行
+                let input_row = `
+                <tr role="row" class="odd order-list">
+                    <td>
+                        <div class="add-method" href="javascript:void(0);" onclick="add_list(this)">
+                            <span class="add-method-icon icon iconfont">&#xe601;</span>
+                            <span class="add-method-text">添加</span>
+						 </div>
+                    </td>
+                    <td>
+                        <input type="text" name="product[]" value="${node.text}" data-id="${node.id}" class="form-control" onclick="showAjaxModal(this)">
+                    </td>
+                    <td>
+                        <input type="text" name="unit[]" disabled class="form-control" value="${node.original.unit}">
+                    </td>
+                    <td><input type="number" class="form-control" value="" name="num[]"></td>
+                    <td>
+                        <div class="del-method delete" href="javascript:void(0)" onclick="del_list(this)">
+                            <span class="del-method-icon icon iconfont">&#xe6d6;</span>
+                            <span class="del-method-text">删除</span>
+                        </div>
+                    </td>
+                </tr>`
+                let a = $(input_row);
+                a.appendTo(target.parent().parent().parent());
+                // let p = a.find('input[name="product[]"]');
+                // console.log(p);
+            }
+            // $('input[name="product[]"]').val(node.text);
+            // console.log("添加新节点");
+        }
+    }
+    tree.jstree("deselect_all",true);
+};
+
+function showAjaxModal(e) {
+    let _this = $(e);
+    target = _this;
+    // _this.val('hello world');
 	jQuery('#modal-add').modal('show', { backdrop: 'static' });
 	// jQuery('#modal-add .modal-body').html(response);
     // jQuery.ajax({
@@ -205,6 +305,15 @@ function showAjaxModal() {
     //         toastr.error(txt);
     //     }
     // });
+}
+
+// 保存
+function save() {
+
+}
+
+function goback(e) {
+    window.location.href = "{:url('Instorage/index')}";
 }
 
 </script>

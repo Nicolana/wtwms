@@ -52,6 +52,7 @@ function test_tree($tree, $leaves)
         $temp = [
             'id' => strval($val['id']),
             'text' => $val['name'],
+            'unit' => $val['unit'],
             'state' => ['opened' => true, 'selected' => false],
             'type' => 'leaf'
         ];

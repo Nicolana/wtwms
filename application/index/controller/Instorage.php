@@ -32,7 +32,7 @@ class Instorage extends Base{
         $products = product::all($status);
 
         $this->assign([
-            'products' => json_encode(test_tree($category, $products))
+            'products' => json_encode(test_tree($category, $products)),
         ]);
         return view();
     }

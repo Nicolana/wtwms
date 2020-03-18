@@ -24,7 +24,7 @@
                 <select class="form-control" name="brand">
                     <option value="0"  >默认</option>
                     {volist name='brand' id='vo'}
-                    	<option value="{$vo.name}">{$vo.name}</option>
+                    	<option value="{$vo.id}">{$vo.name}</option>
                     {/volist}
                 </select>
 			</div>
@@ -36,7 +36,7 @@
 					<option value="0"  >默认</option>
 
 					{volist name='category' id='vo'}
-						<option value="{$vo.name}">{$vo.name}</option>
+						<option value="{$vo.id}">{$vo.name}</option>
 					{/volist}
 
 				</select>
@@ -58,7 +58,7 @@
                 <label class="control-label">产品单位</label>
                 <select class="form-control" name="unit">
                     {volist name='unit' id='vo'}
-                    	<option value="{$vo.name}">{$vo.name}</option>
+                    	<option value="{$vo.id}">{$vo.name}</option>
                     {/volist}
                 </select>
 			</div>
@@ -71,7 +71,7 @@
                 <label class="control-label">默认仓库</label>
                 <select class="form-control" name="storage">
                     {volist name='storage' id='vo'}
-                    	<option value="{$vo.name}">{$vo.name}</option>
+                    	<option value="{$vo.id}">{$vo.name}</option>
                     {/volist}
                 </select>
 			</div>

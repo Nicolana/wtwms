@@ -1,0 +1,211 @@
+{extend name="base"}
+{block name="style"}
+{load href="/static/js/jstree/themes/default/style.min.css"}
+
+{/block}
+{block name="content"}
+
+<div class="page-title">
+    <div class="breadcrumb-env pull-left">
+        <ol class="breadcrumb bc-1">
+            <li>
+                <a href="{:url('@index')}"><i class="fa-home"></i>首页</a>
+            </li>
+            <li>
+                <a href="{:url('Instorage/index')}">入库管理</a>
+            </li>
+			<li class="active">
+				<strong>入库添加</strong>
+			</li>
+        </ol>
+    </div>
+</div>
+
+<div class="panel panel-default">
+  <div class="panel-heading">产品入库添加</div>
+  <div class="panel-body">
+
+  	<form class="validate add-form" novalidate="novalidate">
+
+  		<div class="row">
+  			<div class="col-md-4">
+  				<div class="form-group">
+  					<label for="field-2" class="control-label">订单号</label>
+  					<input disabled type="text" class="form-control" name="sn" placeholder="订单号" value="SN{:date('Ymdhis',time())}{:rand(10000,99999)}">
+  				</div>
+  			</div>
+
+  	        <div class="col-md-4">
+  	            <div class="form-group">
+  	                <label for="field-2" class="control-label">操作员</label>
+  	                <input disabled type="text" class="form-control" name="author" placeholder="操作员" value="{$my_info->truename}">
+  	            </div>
+  	        </div>
+  	        <div class="col-md-4">
+  	            <div class="form-group">
+  	                <label class="control-label">入库类型</label>
+  	                <select class="form-control" name="type">
+  	                    <option value="采购入库" >采购入库</option>
+  	                    <option value="销售退货" >销售退货</option>
+  	                </select>
+  	            </div>
+  	        </div>
+  	    </div>
+
+  	    <table class="table table-striped table-bordered table-hover dataTable no-footer">
+  	        <thead>
+  	            <tr role="row">
+  	                <th></th>
+  	                <th class="sorting_disabled" rowspan="1" colspan="1">
+  	                    产品名称
+  	                </th>
+                    <th class="" rowspan="1" colspan="1">入库单位</th>
+  	                <th class="sorting_disabled" rowspan="1" colspan="1">
+  	                    入库数
+  	                </th>
+  	                <th></th>
+  	            </tr>
+  	        </thead>
+  	        <tbody>
+  	            <tr role="row" class="odd order-list">
+  	                <td>
+  	                    <a href="javascript:void(0);" onclick="add_list(this)">
+							[ + ]
+						 </a>
+  	                </td>
+  	                <td>
+						<input type="text" name="product[]" class="form-control" onclick="showAjaxModal()">
+  	                </td>
+                    <td>
+                        <input type="text" class="form-control dropdown-toggle" name="unit" value="test">
+                    </td>
+  	                <td><input type="text" class="form-control" value="" name="num[]"></td>
+  	                <td>
+  	                	<a class="delete" href="javascript:void(0)" onclick="del_list(this)"> [ - ] </a>
+  	                </td>
+  	            </tr>
+
+  	        </tbody>
+  	    </table>
+
+  		<div class="row">
+  			<div class="col-md-12">
+  				<div class="form-group no-margin">
+  					<label for="field-7" class="control-label">备注</label>
+  					<textarea class="form-control autogrow" name="desc" placeholder="备注" style="overflow: hidden; word-wrap: break-word; resize: horizontal; height: 50px;"></textarea>
+  				</div>
+  			</div>
+  		</div>
+  	</form>
+  </div>
+</div>
+
+<!-- Modal show (Ajax Modal)-->
+<div class="modal fade " id="modal-add">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">查看入库</h4>
+            </div>
+
+            <div class="modal-body" id="test-1">
+                <div class="row">
+                    <div class="form-group col-md-12">
+    					<label for="field-1" class="control-label">产品选择</label>
+    					<input type="hidden" name="products" value="">
+    					<div class="form-control js-tree-1" style="overflow: hidden; overflow-wrap: break-word; height: initial;">
+    					</div>
+    				</div>
+                </div>
+            </div>
+
+			<script type="text/javascript">
+				$(function(){
+					$('.js-tree-1').on("changed.jstree", function (e, data) {
+                        let ids = data.selected;
+                        let name = data.node.text;
+                        $('input[name="products"]').val(ids.join(','));
+                        $('input[name="product[]"]').val(name);
+                    }).on('select_node.jstree', function (e, data) {
+                        // if (data.event) {
+                            // data.instance.select_node(data.node.children_d);
+                            // data.instance.select_node(data.node.parents);
+                        // }
+                        if (data.event) {
+                            data.instance.select_node(data.node.children_d);
+
+                        }
+                    }).on('deselect_node.jstree', function (e, data) {
+                        if (data.event) {
+                            data.instance.deselect_node(data.node.children_d);
+                        }
+                    }).jstree({
+                        "core": {
+                            "data": {$products|raw},
+                            // "themes" : { "stripes" : true },
+                        },
+                        "types": {
+                            'root': {
+                                'icon': ''
+                            },
+                            'leaf': {
+                                'icon': 'jstree-icon jstree-file'
+                            }
+                        },
+                        "checkbox": {
+                            "keep_selected_style": false,
+                            "cascade": "",
+                            "three_state": false
+                        },
+                        "expand_selected_onload": true,
+                        "plugins": ["types", "checkbox", "themes", "wholerow"]
+                    })
+				});
+			</script>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-white" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-info" data-dismiss="modal">确定</button>
+            </div>
+        </div>
+    </div>
+</div>
+{/block}
+
+{block name="script"}
+{load href="/static/js/jstree/jstree.min.js"}
+<script>
+$(function () {
+	nav_show('{$Request.controller}-index');
+});
+function add_list(obj){
+    // $(obj).parent().parent().hide();
+    $(obj).parent().parent().clone().appendTo( $(obj).parent().parent().parent() );
+}
+
+function del_list(obj){
+    $(obj).parent().parent().remove();
+}
+
+function showAjaxModal() {
+	jQuery('#modal-add').modal('show', { backdrop: 'static' });
+	// jQuery('#modal-add .modal-body').html(response);
+    // jQuery.ajax({
+    //     url: "{:url('Instorage/list')}",
+    //     success: function (response) {
+    //         if(typeof response != 'string'){
+    //             toastr.error(response.msg);
+    //             return false;
+    //         }
+	//
+    //     },
+    //     error: function(xhr,textStatus,txt){
+    //         toastr.error(txt);
+    //     }
+    // });
+}
+
+</script>
+{/block}

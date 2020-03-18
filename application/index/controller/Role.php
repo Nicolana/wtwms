@@ -19,7 +19,7 @@ class Role extends Base
         // dump(permission_jstree_data($menuModel->getPermissionTree()));
         $this->assign([
             'menu' => json_encode(permission_jstree_data($menuModel->getPermissionTree())),
-            'storage' => json_encode(permission_jstree_data(StorageModel::all(['status' => 0]))),
+            'storages' => json_encode(permission_jstree_data(StorageModel::all(['status' => 0]))),
         ]);
         return view();
     }
@@ -32,7 +32,7 @@ class Role extends Base
         $this->assign([
             'info' => $info,
             'menu' => json_encode(permission_jstree_data($menuModel->getPermissionTree(), explode(',', $info->ids))),
-            'storage' => json_encode(permission_jstree_data(StorageModel::all(['status' => 0]),explode(',',  $info->storages))),
+            'storages' => json_encode(permission_jstree_data(StorageModel::all(['status' => 0]),explode(',',  $info->storages))),
         ]);
         return view();
     }

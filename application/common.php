@@ -31,3 +31,34 @@ function permission_jstree_data($tree, $selected_ids=[])
     }
     return $result;
 }
+
+function test_tree($tree, $leaves)
+{
+    $result = [];
+    foreach($tree as $Cate)
+    {
+        $temp = [
+            'id' => strval($Cate['id']),
+            'text' => $Cate['name'],
+            'state' => ['opened' => true, 'selected' => false],
+            'children' => [],
+            'type' => 'root'
+        ];
+        // array_push($result, strval($Cate['id']), $temp);
+        $result[strval($Cate['id'])] = $temp;
+    }
+    foreach($leaves as $val)
+    {
+        $temp = [
+            'id' => strval($val['id']),
+            'text' => $val['name'],
+            'state' => ['opened' => true, 'selected' => false],
+            'type' => 'leaf'
+        ];
+        if ($result[strval($val['category'])]){
+            array_push($result[strval($val['category'])]['children'], $temp);
+        }
+    }
+    // dump($result);
+    return array_values($result);
+}

@@ -69,7 +69,6 @@ class Product extends Base{
 			$product->sn 		= $param['sn'];
 			$product->name 		= $param['name'];
 			$product->category 	= $param['category'];
-			$product->storage 	= $this->where['storage'];
 			$product->unit 		= $param['unit'];
 			$product->spec 		= $param['spec'];
             $product->brand     = $param['brand']; // 品牌
